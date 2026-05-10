@@ -1,4 +1,4 @@
-name: ERA5 – Scarica e aggrega anno
+name: ERA5 – Singolo anno
 
 on:
   workflow_dispatch:
@@ -16,7 +16,7 @@ on:
 jobs:
   era5-year:
     runs-on: ubuntu-latest
-    timeout-minutes: 360      # 6h max per anno
+    timeout-minutes: 360
 
     steps:
       - name: Checkout repo
@@ -29,14 +29,25 @@ jobs:
           cache: "pip"
 
       - name: Installa dipendenze
-        run: pip install -r requirements.txt
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Crea .cdsapirc
+        run: |
+          echo "url: ${{ secrets.CDSAPI_URL }}" > ~/.cdsapirc
+          echo "key: ${{ secrets.CDSAPI_KEY }}" >> ~/.cdsapirc
+          chmod 600 ~/.cdsapirc
 
       - name: Scarica ed elabora anno ${{ inputs.year }}
         env:
-          CDSAPI_URL: ${{ secrets.CDSAPI_URL }}
-          CDSAPI_KEY: ${{ secrets.CDSAPI_KEY }}
-          ERA5_YEAR:  ${{ inputs.year }}
+          ERA5_YEAR: ${{ inputs.year }}
         run: python era5_ensemble_weekly.py
+
+      - name: Verifica output
+        if: always()
+        run: |
+          ls -lh era5_weekly/ 2>/dev/null || echo "Cartella vuota"
 
       - name: Upload NetCDF anno ${{ inputs.year }}
         uses: actions/upload-artifact@v4
