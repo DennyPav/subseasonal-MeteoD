@@ -1,0 +1,32 @@
+name: ERA5 – Batch 2013-2016
+
+on:
+  workflow_dispatch:
+
+jobs:
+  anno-2013:
+    uses: ./.github/workflows/download_year.yml
+    with:
+      year: "2013"
+    secrets: inherit
+
+  anno-2014:
+    needs: anno-2013
+    uses: ./.github/workflows/download_year.yml
+    with:
+      year: "2014"
+    secrets: inherit
+
+  anno-2015:
+    needs: anno-2014
+    uses: ./.github/workflows/download_year.yml
+    with:
+      year: "2015"
+    secrets: inherit
+
+  anno-2016:
+    needs: anno-2015
+    uses: ./.github/workflows/download_year.yml
+    with:
+      year: "2016"
+    secrets: inherit
