@@ -33,15 +33,11 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Crea .cdsapirc
-        run: |
-          echo "url: ${{ secrets.CDSAPI_URL }}" > ~/.cdsapirc
-          echo "key: ${{ secrets.CDSAPI_KEY }}" >> ~/.cdsapirc
-          chmod 600 ~/.cdsapirc
-
       - name: Scarica ed elabora anno ${{ inputs.year }}
         env:
-          ERA5_YEAR: ${{ inputs.year }}
+          CDSAPI_URL: ${{ secrets.CDSAPI_URL }}
+          CDSAPI_KEY: ${{ secrets.CDSAPI_KEY }}
+          ERA5_YEAR:  ${{ inputs.year }}
         run: python era5_ensemble_weekly.py
 
       - name: Verifica output
