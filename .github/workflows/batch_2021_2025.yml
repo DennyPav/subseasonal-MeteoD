@@ -1,0 +1,39 @@
+name: ERA5 – Batch 2021-2025
+
+on:
+  workflow_dispatch:
+
+jobs:
+  anno-2021:
+    uses: ./.github/workflows/download_year.yml
+    with:
+      year: "2021"
+    secrets: inherit
+
+  anno-2022:
+    needs: anno-2021
+    uses: ./.github/workflows/download_year.yml
+    with:
+      year: "2022"
+    secrets: inherit
+
+  anno-2023:
+    needs: anno-2022
+    uses: ./.github/workflows/download_year.yml
+    with:
+      year: "2023"
+    secrets: inherit
+
+  anno-2024:
+    needs: anno-2023
+    uses: ./.github/workflows/download_year.yml
+    with:
+      year: "2024"
+    secrets: inherit
+
+  anno-2025:
+    needs: anno-2024
+    uses: ./.github/workflows/download_year.yml
+    with:
+      year: "2025"
+    secrets: inherit
