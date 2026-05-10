@@ -1,0 +1,7 @@
+era5_raw/
+era5_weekly/
+*.grib
+*.nc
+*.idx
+__pycache__/
+.cdsapirc
