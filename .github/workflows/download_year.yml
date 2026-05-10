@@ -1,0 +1,47 @@
+name: ERA5 – Scarica e aggrega anno
+
+on:
+  workflow_dispatch:
+    inputs:
+      year:
+        description: "Anno da elaborare (es. 2005)"
+        required: true
+        type: string
+  workflow_call:
+    inputs:
+      year:
+        required: true
+        type: string
+
+jobs:
+  era5-year:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360      # 6h max per anno
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Installa dipendenze
+        run: pip install -r requirements.txt
+
+      - name: Scarica ed elabora anno ${{ inputs.year }}
+        env:
+          CDSAPI_URL: ${{ secrets.CDSAPI_URL }}
+          CDSAPI_KEY: ${{ secrets.CDSAPI_KEY }}
+          ERA5_YEAR:  ${{ inputs.year }}
+        run: python era5_ensemble_weekly.py
+
+      - name: Upload NetCDF anno ${{ inputs.year }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ERA5_ensemble_weekly_${{ inputs.year }}
+          path: era5_weekly/ERA5_ensemble_weekly_${{ inputs.year }}.nc
+          retention-days: 90
+          if-no-files-found: error
